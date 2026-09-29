@@ -28,14 +28,15 @@ async function configure(){
 }
 
 async function api(config,method,action,payload={}){
-  const request=new Request(method==="GET"
-    ?config.url+"?action="+encodeURIComponent(action)
-    :config.url);
-  if(method!=="GET"){request.method="POST";request.headers={"Content-Type":"application/json"};request.body=JSON.stringify({action,...payload});}
+  const isWrite=method!=="GET";
+  const query="?action="+encodeURIComponent(action)+(isWrite
+    ?"&payload="+encodeURIComponent(JSON.stringify(payload))
+    :"");
+  const request=new Request(config.url+query);
+  request.method="GET";
 
-  // Google Apps Script ContentService redirects the POST response to a
-  // one-time script.googleusercontent.com URL. Scriptable can follow that
-  // redirect reliably if we explicitly fetch the redirected response URL as GET.
+  // Apps Script ContentService GET responses redirect to a one-time
+  // script.googleusercontent.com URL. GET→GET redirect is reliable in Scriptable.
   request.onRedirect = redirectedRequest => {
     const responseRequest = new Request(redirectedRequest.url);
     responseRequest.method = "GET";
@@ -56,6 +57,7 @@ async function api(config,method,action,payload={}){
   if(!result.ok)throw new Error(result.error||"Backend error");
   return result;
 }
+
 function normalize(data){
  return {
   members:data.members?.length?data.members:[{id:"member-1",name:"Husband",role:"first"},{id:"member-2",name:"Wife",role:"second"}],
