@@ -120,6 +120,22 @@ function doPost(e) {
   try {
     const action = body.action;
 
+    if (action === "saveMembers") {
+      const items = Array.isArray(body.members) ? body.members : [];
+      if (!items.length) return fail_("No members supplied", "VALIDATION");
+
+      for (const x of items) {
+        if (!x.id || !x.name || !x.role) return fail_("Invalid member", "VALIDATION");
+        const existing = rows_("members").find(r => String(r.id) === String(x.id));
+        if (existing) {
+          updateById_("members", x.id, { name: x.name, role: x.role });
+        } else {
+          append_("members", { id: x.id, name: x.name, role: x.role });
+        }
+      }
+      return json_({ ok: true });
+    }
+
     if (action === "saveExpense") {
       const x = body.expense;
       if (!x || !x.id || Number(x.amount) <= 0 || !x.date || !x.categoryId || !x.description || !x.paidBy) {
