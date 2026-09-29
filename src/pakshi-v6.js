@@ -33,6 +33,15 @@ async function api(config,method,action,payload={}){
     :config.url);
   if(method!=="GET"){request.method="POST";request.headers={"Content-Type":"application/json"};request.body=JSON.stringify({action,...payload});}
 
+  // Google Apps Script ContentService redirects the POST response to a
+  // one-time script.googleusercontent.com URL. Scriptable can follow that
+  // redirect reliably if we explicitly fetch the redirected response URL as GET.
+  request.onRedirect = redirectedRequest => {
+    const responseRequest = new Request(redirectedRequest.url);
+    responseRequest.method = "GET";
+    return responseRequest;
+  };
+
   const raw=await request.loadString();
 
   let result;
