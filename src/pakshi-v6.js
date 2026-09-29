@@ -153,7 +153,7 @@ function renderCategoryDetail(){const c=cat(selectedCategoryId);const items=[...
 document.addEventListener("click",e=>{
  const screen=e.target.closest("[data-screen]")?.dataset.screen;if(screen){show(screen);return}
  const expid=e.target.closest("[data-expense]")?.dataset.expense;if(expid){const x=DATA.expenses.find(v=>v.id===expid);if(!x)return;document.getElementById("edit-id").value=x.id;document.getElementById("edit-amount").value=x.amount;document.getElementById("edit-date").value=x.date;document.getElementById("edit-category").value=x.categoryId;document.getElementById("edit-description").value=x.description;document.getElementById("edit-payment").value=x.paymentMethod;document.getElementById("edit-paidBy").value=x.paidBy;document.getElementById("edit-notes").value=x.notes;show("edit-expense");return}
- const sort=e.target.closest("[data-sort]")?.dataset.sort;if(sort){currentSort=sort;renderExpenses();return}
+ const sort=e.target.closest("[data-sort]")?.dataset.sort;if(sort){currentSort=sort;const active=document.querySelector(".screen.active")?.id;if(active==="category-detail")renderCategoryDetail();else if(active==="expenses-detail")renderExpenses();return}
  const categoryOpen=e.target.closest("[data-category-open]")?.dataset.categoryOpen;if(categoryOpen){selectedCategoryId=categoryOpen;show("category-detail");return}
  const categoryDetail=e.target.closest("[data-category-detail]")?.dataset.categoryDetail;if(categoryDetail){selectedCategoryId=categoryDetail;show("category-detail");return}
  if(e.target.closest("[data-action=categories]")){show("categories-detail");return}
