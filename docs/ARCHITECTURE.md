@@ -32,8 +32,10 @@ The prototype backend maintains:
 - Savings
 - Budgets
 
-## Security
+## Transport
 
-The prototype intentionally uses no bearer token. The Google Sheet is configured as “Anyone with the link can edit” and the Apps Script Web App is deployed with access set to Anyone. This is suitable only for a throwaway prototype; it is not appropriate for sensitive or production financial data.
+The prototype uses GET for both reads and mutations. Mutation payloads are sent as URL-encoded JSON to the Apps Script Web App, which reuses the backend write handlers. This is intentionally a prototype transport choice because Scriptable + Apps Script POST response redirects were slow and unreliable in testing.
+
+The prototype does not require bearer-token authentication. The Google Sheet is configured as “Anyone with the link can edit” and the Apps Script Web App is deployed with access set to Anyone. This is suitable only for a throwaway prototype; it is not appropriate for sensitive or production financial data.
 
 Production authentication and authorization remain the responsibility of the native Supabase architecture.
