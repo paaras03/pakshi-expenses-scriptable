@@ -23,7 +23,11 @@ The prototype uses a publicly editable Google Sheet and an unauthenticated Apps 
 ## 5. Backend
 Google Sheet: https://docs.google.com/spreadsheets/d/11n-oiPMewe_0jIShGfGMOqY1uCH3ciYI5V-Q3wXFJVE/edit?usp=drivesdk
 Apps Script project: Pakshi Expenses — Scriptable Backend
-Latest deployment URL supplied during development: https://script.google.com/macros/s/AKfycbwCu62ay8d--NgH3OhxUWj5DD7GtIFfhtzEe-qF_7ThxNmXCX0zDn8Hw45kHyj1rYlz/exec
+
+### Current Apps Script Web App URL
+https://script.google.com/macros/s/AKfycbwCu62ay8d--NgH3OhxUWj5DD7GtIFfhtzEe-qF_7ThxNmXCX0zDn8Hw45kHyj1rYlz/exec
+
+**Reference rule:** Keep this URL in this checkpoint as the current deployment reference. If the deployment URL changes, update this document in GitHub.
 
 ## 6. Current Data Model
 Members: id, name, role
@@ -49,6 +53,7 @@ Budgets: id, month, categoryId, amount, updatedAt
 
 ## 8. Transport History
 POST mutations through Apps Script were unreliable in Scriptable. Direct diagnostics showed network connection lost / HTML Page Not Found behavior in some redirect cases.
+
 Relevant commits:
 - 3bdda4558b8749633ac5e757b5ba171ec8312418 — direct POST diagnostic
 - c9877c652c417f27494f2e4cc7f0597089f84c00 — Apps Script POST redirect handling
@@ -128,6 +133,9 @@ Read docs/Project Status - Checkpoint 1.md first and treat it as the source of t
 Repository: https://github.com/paaras03/pakshi-expenses-scriptable
 
 Critical architecture decision: Scriptable remains Scriptable + Google Apps Script + Google Sheets. We have NOT decided to move Scriptable to Supabase. Do not switch the backend unless I explicitly approve it.
+
+The current Apps Script Web App URL is:
+https://script.google.com/macros/s/AKfycbwCu62ay8d--NgH3OhxUWj5DD7GtIFfhtzEe-qF_7ThxNmXCX0zDn8Hw45kHyj1rYlz/exec
 
 The separate native production app is https://github.com/paaras03/pakshi-expenses and uses SwiftUI + Supabase.
 
