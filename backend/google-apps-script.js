@@ -142,6 +142,12 @@ function doPost(e) {
         return fail_("Invalid expense", "VALIDATION");
       }
 
+      // Idempotency: Scriptable may retry a POST after a response/redirect
+      // failure even though the first write already reached the Sheet.
+      if (rows_("expenses").some(r => String(r.id) === String(x.id))) {
+        return json_({ ok: true, existing: true });
+      }
+
       append_("expenses", {
         id: x.id,
         date: x.date,
