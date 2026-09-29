@@ -34,6 +34,6 @@ The prototype backend maintains:
 
 ## Security
 
-The prototype uses a bearer API token stored in Scriptable Keychain and Google Apps Script properties. This is suitable only for a controlled prototype.
+The prototype intentionally uses no bearer token. The Google Sheet is configured as “Anyone with the link can edit” and the Apps Script Web App is deployed with access set to Anyone. This is suitable only for a throwaway prototype; it is not appropriate for sensitive or production financial data.
 
 Production authentication and authorization remain the responsibility of the native Supabase architecture.
