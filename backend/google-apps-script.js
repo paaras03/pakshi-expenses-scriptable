@@ -96,6 +96,18 @@ function doGet(e) {
   try {
     const action = p.action || "bootstrap";
 
+    // Prototype write transport: Scriptable uses GET for mutations because
+    // Apps Script ContentService POST responses are slow/unreliable on iOS.
+    // The client sends the write payload as URL-encoded JSON.
+    if (action !== "bootstrap" && p.payload) {
+      const payload = JSON.parse(p.payload);
+      return doPost({
+        postData: {
+          contents: JSON.stringify({ action: action, ...payload })
+        }
+      });
+    }
+
     if (action === "bootstrap") {
       return json_({
         ok: true,
