@@ -170,7 +170,22 @@ webView.shouldAllowRequest=request=>{
  const payload=JSON.parse(decodeURIComponent(request.url.slice(prefix.length)));
  (async()=>{
   try{
-   if(payload.type==="saveExpense"){payload.expense.id=uuid();payload.expense.createdAt=new Date().toISOString();await api(config,"POST","saveExpense",{expense:payload.expense});await refresh(webView,config);await webView.evaluateJavaScript("toast('Expense saved');show('home');",false)}
+   if(payload.type==="saveExpense"){
+     payload.expense.id=uuid();
+     payload.expense.createdAt=new Date().toISOString();
+     let writeError=null;
+     try{
+       await api(config,"POST","saveExpense",{expense:payload.expense});
+     }catch(err){
+       writeError=err;
+     }
+     const latest=await refresh(webView,config);
+     const saved=latest.expenses.some(x=>String(x.id)===String(payload.expense.id));
+     if(!saved){
+       throw writeError||new Error("Expense was not saved");
+     }
+     await webView.evaluateJavaScript("toast('Expense saved');show('home');",false)
+   }
    if(payload.type==="updateExpense"){await api(config,"POST","updateExpense",{expense:payload.expense});await refresh(webView,config);await webView.evaluateJavaScript("toast('Expense updated');show('expenses-detail');",false)}
    if(payload.type==="deleteExpense"){await api(config,"POST","deleteExpense",{id:payload.id});await refresh(webView,config);await webView.evaluateJavaScript("toast('Expense deleted');show('expenses-detail');",false)}
    if(payload.type==="saveIncome"){await api(config,"POST","saveIncome",{income:payload.income});await refresh(webView,config);await webView.evaluateJavaScript("toast('Income saved');show('income-detail');",false)}
