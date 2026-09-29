@@ -4,13 +4,7 @@ Standalone Scriptable prototype of Pakshi Expenses for iPhone.
 
 ## Architecture
 
-```
-Scriptable (iPhone)
-        ↓
-Google Apps Script Web App
-        ↓
-Google Sheet
-```
+Scriptable (iPhone) → Google Apps Script Web App → Google Sheet
 
 This repository is intentionally separate from the native SwiftUI/Supabase repository.
 
@@ -27,8 +21,10 @@ This repository is intentionally separate from the native SwiftUI/Supabase repos
 
 ## Run
 
-Open `src/pakshi-v6.js` in Scriptable and run it. On first run, enter the deployed Google Apps Script Web App URL and API token.
+Open `src/pakshi-v6.js` in Scriptable and run it. On first run, enter the deployed Google Apps Script Web App URL.
 
 ## Important
 
-This is a prototype. The Google Apps Script bearer token is not equivalent to Supabase Auth + RLS and must not be treated as production security.
+This is a prototype using an intentionally public/editable Google Sheet. There is no API authentication in the Scriptable backend. Anyone with the Sheet link can edit the data.
+
+The native application continues to use Supabase Auth + RLS for production security.
