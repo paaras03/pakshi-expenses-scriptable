@@ -9,8 +9,6 @@
  * Execute as: Me
  * Who has access: Anyone
  *
- * Set Script Property:
- * PAKSHI_API_TOKEN = a long random value shared with the two Scriptable clients.
  */
 
 const SHEETS = {
@@ -27,10 +25,6 @@ function json_(value) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function tokenValid_(token) {
-  const expected = PropertiesService.getScriptProperties().getProperty("PAKSHI_API_TOKEN");
-  return !!expected && token === expected;
-}
 
 function fail_(message, code) {
   return json_({ ok: false, error: message, code: code || "ERROR" });
@@ -98,7 +92,6 @@ function body_(e) {
 
 function doGet(e) {
   const p = e.parameter || {};
-  if (!tokenValid_(p.token)) return fail_("Unauthorized", "UNAUTHORIZED");
 
   try {
     const action = p.action || "bootstrap";
@@ -123,7 +116,6 @@ function doGet(e) {
 
 function doPost(e) {
   const body = body_(e);
-  if (!tokenValid_(body.token)) return fail_("Unauthorized", "UNAUTHORIZED");
 
   try {
     const action = body.action;
