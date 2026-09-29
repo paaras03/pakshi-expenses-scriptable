@@ -3,11 +3,10 @@
 // Native iOS/Supabase track is intentionally untouched.
 //
 // First run:
-// 1. Enter the deployed Apps Script Web App URL.
-// 2. Enter the same API token configured in Apps Script.
-// Values are stored in Scriptable Keychain.
-
-const APP = { urlKey:"pakshi.scriptable.apiURL", tokenKey:"pakshi.scriptable.apiToken" };
+// Enter the deployed Apps Script Web App URL.
+// No API token is used in this prototype because the underlying Google Sheet
+// is configured as "Anyone with the link can edit".
+const APP = { urlKey:"pakshi.scriptable.apiURL" };
 
 const DEFAULT_CATEGORIES=[
 ["food","Food & Dining","🍽"],["groceries","Groceries","🛒"],["shopping","Shopping","🛍"],
@@ -17,23 +16,22 @@ const DEFAULT_CATEGORIES=[
 
 async function configure(){
   let url=Keychain.contains(APP.urlKey)?Keychain.get(APP.urlKey):"";
-  let token=Keychain.contains(APP.tokenKey)?Keychain.get(APP.tokenKey):"";
-  if(!url||!token){
-    const a=new Alert();a.title="Pakshi Scriptable setup";a.message="Enter the Google Apps Script Web App URL and API token.";
-    a.addTextField("Web App URL",url);a.addTextField("API token",token);a.addAction("Save");a.addCancelAction("Cancel");
+  if(!url){
+    const a=new Alert();a.title="Pakshi Scriptable setup";a.message="Enter the Google Apps Script Web App URL.";
+    a.addTextField("Web App URL",url);a.addAction("Save");a.addCancelAction("Cancel");
     if(await a.presentAlert()===-1)throw new Error("Setup cancelled.");
-    url=a.textFieldValue(0).trim();token=a.textFieldValue(1).trim();
-    if(!url||!token)throw new Error("URL and token are required.");
-    Keychain.set(APP.urlKey,url);Keychain.set(APP.tokenKey,token);
+    url=a.textFieldValue(0).trim();
+    if(!url)throw new Error("Web App URL is required.");
+    Keychain.set(APP.urlKey,url);
   }
-  return {url:url.replace(/\/$/,""),token};
+  return {url:url.replace(/\/$/,"")};
 }
 
 async function api(config,method,action,payload={}){
   const request=new Request(method==="GET"
-    ?config.url+"?action="+encodeURIComponent(action)+"&token="+encodeURIComponent(config.token)
+    ?config.url+"?action="+encodeURIComponent(action)
     :config.url);
-  if(method!=="GET"){request.method="POST";request.headers={"Content-Type":"application/json"};request.body=JSON.stringify({action,token:config.token,...payload});}
+  if(method!=="GET"){request.method="POST";request.headers={"Content-Type":"application/json"};request.body=JSON.stringify({action,...payload});}
   const result=await request.loadJSON();
   if(!result.ok)throw new Error(result.error||"Backend error");
   return result;
