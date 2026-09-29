@@ -32,7 +32,18 @@ async function api(config,method,action,payload={}){
     ?config.url+"?action="+encodeURIComponent(action)
     :config.url);
   if(method!=="GET"){request.method="POST";request.headers={"Content-Type":"application/json"};request.body=JSON.stringify({action,...payload});}
-  const result=await request.loadJSON();
+
+  const raw=await request.loadString();
+
+  let result;
+  try{
+    result=JSON.parse(raw);
+  }catch(error){
+    console.log("Backend returned invalid JSON:");
+    console.log(raw);
+    throw new Error("Backend returned invalid JSON");
+  }
+
   if(!result.ok)throw new Error(result.error||"Backend error");
   return result;
 }
