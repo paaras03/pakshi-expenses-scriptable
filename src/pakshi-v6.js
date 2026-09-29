@@ -130,6 +130,17 @@ function render(){
 }
 function renderMembers(){const first=DATA.members.find(x=>x.role==="first")||DATA.members[0]||{};const second=DATA.members.find(x=>x.role==="second")||DATA.members[1]||{};document.getElementById("member-first").value=first.name||"";document.getElementById("member-second").value=second.name||""}
 function fillSelects(){["category","edit-category"].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=DATA.categories.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join("")});["paidBy","edit-paidBy"].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=DATA.members.map(m=>'<option value="'+m.id+'">'+m.name+'</option>').join("")})}
+function renderBudgetEdit(){
+ const monthly=document.getElementById("budget-monthly");
+ if(monthly) monthly.value=budgetFor("");
+ const container=document.getElementById("budget-category-fields");
+ if(!container)return;
+ container.innerHTML=DATA.categories.map(c=>{
+   const value=budgetFor(c.id);
+   return '<div class="field"><label>'+c.iconKey+' '+c.name+'</label><input class="budget-category" data-category-id="'+c.id+'" type="number" min="0" step="0.01" value="'+(value||"")+'" placeholder="₹0"></div>';
+ }).join("");
+}
+
 function renderBudget(){const s=spent(),b=budgetFor();document.getElementById("budget-content").innerHTML='<div class="card"><div class="meta"><span>Monthly budget</span><span>'+money(b)+'</span></div><div class="progress"><div class="fill" style="width:'+Math.min(100,b?s/b*100:0)+'%"></div></div><div class="meta"><span>'+money(s)+' spent</span><span>'+ (b?money(Math.max(0,b-s))+" remaining":"No budget")+'</span></div></div><div class="section"><h2 class="section-title">Category budgets</h2><div class="list">'+DATA.categories.map(c=>{const x=ex().filter(x=>String(x.categoryId)===String(c.id)).reduce((a,x)=>a+x.amount,0),cb=budgetFor(c.id);return '<div class="card"><div class="meta"><span>'+c.iconKey+' '+c.name+'</span><span>'+ (cb?money(cb):"No budget")+'</span></div><div class="progress"><div class="fill" style="width:'+Math.min(100,cb?x/cb*100:0)+'%"></div></div><div class="meta"><span>'+money(x)+' spent</span><span>'+ (cb?money(Math.max(0,cb-x))+" remaining":"")+'</span></div></div>'}).join("")+'</div></div>'}
 function renderIncome(){const x=DATA.income.find(x=>String(x.month).slice(0,7)===month)||{};document.getElementById("income-content").innerHTML='<div class="card"><div class="amount">'+money(income())+'</div><div class="sub">Household income this month</div><button class="primary" data-screen="income-edit">Edit Income</button></div>';document.getElementById("income-first").value=x.firstMemberAmount||0;document.getElementById("income-second").value=x.secondMemberAmount||0}
 function renderSavings(){document.getElementById("savings-content").innerHTML='<div class="card"><div class="amount">'+money(savings())+'</div><div class="sub">Current household account balances</div><button class="primary" data-screen="savings-edit">Edit Savings</button></div>';const g=k=>DATA.savings.find(x=>x.ownerType===k)?.amount||0;document.getElementById("save-first").value=g("firstMember");document.getElementById("save-second").value=g("secondMember");document.getElementById("save-common").value=g("common")}
