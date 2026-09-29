@@ -28,22 +28,14 @@ async function configure(){
 }
 
 async function api(config,method,action,payload={}){
-  const request=new Request(method==="GET"
-    ?config.url+"?action="+encodeURIComponent(action)
-    :config.url);
-  if(method!=="GET"){request.method="POST";request.headers={"Content-Type":"application/json"};request.body=JSON.stringify({action,...payload});}
+  const isRead=method==="GET";
+  const params="action="+encodeURIComponent(action)+(isRead?"":"&payload="+encodeURIComponent(JSON.stringify(payload)));
+  const request=new Request(config.url+"?"+params);
 
-  // Google Apps Script ContentService redirects mutation responses.
-  // GET/bootstrap requests should follow the redirect normally; only POST
-  // mutations need the explicit GET redirect workaround used by this prototype.
-  if(method!=="GET"){
-    request.onRedirect = redirectedRequest => {
-      const responseRequest = new Request(redirectedRequest.url);
-      responseRequest.method = "GET";
-      return responseRequest;
-    };
-  }
-
+  // Scriptable + Apps Script POST response redirects are unreliable on iOS.
+  // The prototype backend supports URL-encoded GET mutations, so all writes
+  // use that transport. The method argument remains POST at call sites to
+  // make the operation type explicit.
   const raw=await request.loadString();
 
   let result;
